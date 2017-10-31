@@ -3,21 +3,26 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+
 // Requiring our Note and Article models
 var Note = require("./models/Note.js");
 var Article = require("./models/Article.js");
-// Our scraping tools
+
+// Scraping tools
 var request = require("request");
 var cheerio = require("cheerio");
+
 // Set mongoose to leverage built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
-
 
 // Initialize Express
 var app = express();
 
-// Use morgan and body parser with our app
+// Configure middleware
+
+// Use morgan logger for logging requests
 app.use(logger("dev"));
+// Use body-parser for handling form submissions
 app.use(bodyParser.urlencoded({
   extended: false
 }));
@@ -26,7 +31,7 @@ app.use(bodyParser.urlencoded({
 app.use(express.static("public"));
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://heroku_qm85710b:flc7kjaa0tvet9h11kca9nr91m@ds239965.mlab.com:39965/heroku_qm85710b");
+mongoose.connect("mongodb://heroku_5l4zf6t0:c4s25tbp3p4j3ljnvbcul8u3go@ds157040.mlab.com:57040/heroku_5l4zf6t0");
 var db = mongoose.connection;
 
 // Show any mongoose errors
@@ -49,8 +54,9 @@ app.get("/scrape", function(req, res) {
   request("http://www.espn.com/college-football/team/_/id/2390/miami-hurricanes", function(error, response, html) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
-    // Now, we grab every h5 within an article tag, and do the following:
-    $("article h1").each(function(i, element) {
+
+    // Now, we grab every h2 within an article tag, and do the following:
+    $("article h2").each(function(i, element) {
 
       // Save an empty result object
       var result = {};
